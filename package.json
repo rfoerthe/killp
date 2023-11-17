@@ -1,0 +1,33 @@
+{
+  "name": "killp",
+  "version": "1.0.0",
+  "description": "Kill a process running on given port or by its pid or kill its parent process",
+  "main": "index.js",
+  "bin": {
+    "killp": "cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rfoerthe/killp.git"
+  },
+  "keywords": [
+    "process",
+    "kill",
+    "killp",
+    "port",
+    "parent"
+  ],
+  "author": "Roland Förther",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/rfoerthe/killp/issues"
+  },
+  "homepage": "https://github.com/rfoerthe/killp#readme",
+  "dependencies": {
+    "shell-exec": "1.0.2",
+    "yargs": "^17.7.2"
+  }
+}

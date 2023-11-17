@@ -1,2 +1,4 @@
 # killp
-Node.js module to kill a process by TCP port or PID or to kill its parent process 
+Node.js module to kill a process running on given port or by its pid or kill its parent process (including children)
+
+WORK IN PROGRESS
