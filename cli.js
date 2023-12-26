@@ -2,18 +2,15 @@
 'use strict'
 
 import killp from "./index.js";
-import yargs from "yargs/yargs";
+import yargs from "yargs";
 import {hideBin} from "yargs/helpers";
 
 
 const argv = yargs(hideBin(process.argv))
     .usage('Usage: $0 [-v] -p num [--parent-name string]')
-	.option('p', {description: 'Port of process', type: 'number'})
-    .alias('p', 'port')
+	.option('p', {alias: 'port', description: 'Port of process', demandOption: true, type: 'number'})
 	.option('parent-name',  {description: 'Name of the parent process', type: 'string'})
-	.option('v', {description: 'Verbose output', type: 'boolean'})
-	.alias('v', 'verbose')
-	.demandOption(['port'])
+	.option('v', {alias: 'verbose', description: 'Verbose output', type: 'boolean'})
     .argv
 
 const {port, parentName, verbose} = argv
