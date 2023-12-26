@@ -1,12 +1,14 @@
 {
   "name": "killp",
   "version": "1.0.0",
+  "type": "module",
   "description": "Kill a process running on given port or by its pid or kill its parent process",
   "main": "index.js",
   "bin": {
     "killp": "cli.js"
   },
   "scripts": {
+    "start": "node cli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,6 +29,7 @@
   },
   "homepage": "https://github.com/rfoerthe/killp#readme",
   "dependencies": {
+    "ps-list": "^8.1.1",
     "shell-exec": "1.0.2",
     "yargs": "^17.7.2"
   }
