@@ -13,11 +13,11 @@ export default async function (port, parentName, verbose) {
     const processId = os.platform() === 'win32' ? await getProcessIdWin32() : await getProcessId();
 
     if (typeof parentName === 'string' && parentName.length > 0) {
-        const ppid = await getParentProcessId(parseInt(processId), parentName)  // Use new function
-        if (ppid) {
-            await killProcess(ppid, verbose);
+        const {parentProcessId, name} = await getParentProcess(parseInt(processId), parentName)  // Use new function
+        if (parentProcessId) {
+            await killProcess(parentProcessId, verbose);
         } else {
-            if (verbose) console.log(`Parent process with name '${parentName}' not found.`)
+            throw new Error(`Refused to terminate parent process. The specified name '${parentName}' does not match the real name '${name}'`)
         }
     } else {
         await killProcess(processId, verbose);
@@ -25,8 +25,9 @@ export default async function (port, parentName, verbose) {
 
     async function getProcessId() {
         const res = await shellExec('lsof -i -P -n')
+        if (res.code !== 0) throw new Error("command 'lsof' failed: " + res.stderr)
         const {stdout} = res
-        if (!stdout) throw new Error('No stdout from command "lsof"')
+        if (!stdout) throw new Error(`No process running on port ${port}`)
 
         const lines = stdout.split('\n')
 
@@ -40,8 +41,10 @@ export default async function (port, parentName, verbose) {
 
     async function getProcessIdWin32() {
         const res = await shellExec('netstat -nao')
+        if (res.code !== 0) throw new Error("command 'netstat' failed: " + res.stderr)
         const {stdout} = res
-        if (!stdout) throw new Error('No stdout from command "lsof"')
+        if (!stdout) throw new Error(`No process running on port ${port}`)
+
         const lines = stdout.split('\n')
 
         // The second white-space delimited column of netstat output is the local port,
@@ -58,12 +61,12 @@ export default async function (port, parentName, verbose) {
         return pids[0]
     }
 
-    async function getParentProcessId(childPid, parentCmdName) {
+    async function getParentProcess(childPid, parentCmdName) {
         const allProcesses = await psList();
         const childProcess = allProcesses.find(proc => proc.pid === childPid);
         const ppid = childProcess ? childProcess.ppid : undefined;
         const parentProcess = allProcesses.find(proc => proc.pid === ppid);
-        return parentProcess && parentProcess.name === parentCmdName ? ppid : undefined;
+        return { parentProcessId: parentProcess.name === parentCmdName ? ppid : undefined, name: parentProcess.name }
     }
 
     async function killProcess(pid, verbose) {
