@@ -25,8 +25,7 @@ export default async function (port, parentName, verbose) {
 
     async function getProcessId() {
         const res = await shellExec('lsof -i -P -n')
-        console.log(res)
-        if (res.code !== 0) throw new Error("command 'lsof' failed: " + res.stderr)
+        if (res.code !== 0 && res.stderr) throw new Error("command 'lsof' failed: " + res.stderr)
         const {stdout} = res
         if (!stdout) throw new Error(`No process running on port ${port}`)
 
@@ -42,7 +41,7 @@ export default async function (port, parentName, verbose) {
 
     async function getProcessIdWin32() {
         const res = await shellExec('netstat -nao')
-        if (res.code !== 0) throw new Error("command 'netstat' failed: " + res.stderr)
+        if (res.code !== 0 && res.stderr) throw new Error("command 'netstat' failed: " + res.stderr)
         const {stdout} = res
         if (!stdout) throw new Error(`No process running on port ${port}`)
 
