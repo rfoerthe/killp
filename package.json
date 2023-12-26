@@ -1,14 +1,14 @@
 {
   "name": "killp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
-  "description": "Kill a process running on given port or by its pid or kill its parent process",
-  "main": "index.js",
+  "description": "kill a process running on given port or kill its parent process (including children)",
+  "main": "index.mjs",
   "bin": {
-    "killp": "cli.js"
+    "killp": "cli.mjs"
   },
   "scripts": {
-    "start": "node cli.js",
+    "example": "node example.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
