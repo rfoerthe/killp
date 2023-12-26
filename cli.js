@@ -1,21 +1,64 @@
 #!/usr/bin/env node
 'use strict'
 
-const killp = require('./')
-const yargs = require('yargs/yargs')
-const { hideBin } = require('yargs/helpers')
-const args = yargs(hideBin(process.argv)).argv
+import killp from "./index.js";
 
-console.log(args)
+import yargs from "yargs/yargs";
 
-const kill_parent = args.parent;
+import {hideBin} from "yargs/helpers";
 
-return killp(args.port, args.pid, kill_parent)
+
+/*
+yargs(hideBin(process.argv))
+	.command('killp <port>', 'Kill process running on port', (yargs) => {
+		return yargs
+			.positional('port', {
+				describe: 'port of process',
+				number: true
+			})
+	}, (argv) => {
+		if (argv.verbose) console.info(`start server on :${argv.port}`)
+		serve(argv.port)
+	})
+	.demandCommand(1, 'You need at least one command before moving on')
+	.option('verbose', {
+		alias: 'v',
+		type: 'boolean',
+		description: 'Run with verbose logging'
+	})
+	.parse()
+*/
+
+/*
+var argv = yargs(process.argv.splice(4))
+	.usage('Usage: $0 <port> [options]')
+	.positional('port')
+	.example('$0 8080', 'kill process listening on port 8080')
+	.alias('f', 'file')
+	.nargs('f', 1)
+	.describe('f', 'Load a file')
+	.help('h')
+	.alias('h', 'help')
+	.argv;
+*/
+
+
+const argv = yargs(hideBin(process.argv))
+	.usage('Usage: $0 --port num [--parent-name string]')
+	.alias('p', 'port')
+	.number('port')
+	.demandOption(['port'])
+	.argv
+
+
+const kill_parent = argv.parentName;
+
+
+killp(argv.port, kill_parent)
 	.then((result) => {
-		console.log(`Process on port ${args.port} killed`)
+		console.log(`Process with PID ${result} killed`)
 	})
 	.catch((error) => {
-		console.log(`Could not kill process on port ${args.port}. ${error.message}.`)
-		console.log(error)
+		console.log(`Could not kill process on port ${argv.port}. ${error.message}.`)
 	})
 
