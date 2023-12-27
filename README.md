@@ -20,4 +20,5 @@ In general, it is not safe to terminate a parent process based only on informati
 Therefore, you must pass the name of the parent process (the command that started it) to the `parent-name` option. 
 If the names do not match, killp refuses to end the parent process.
 
-The command is working on Windows 10+, macOS 13+ and Linux systems. On Linux you have to install the package `lsof` first.
+The command is working on Windows 10+, macOS 13+, FreeBSD 14+ and Linux systems. Under Linux and FreeBSD you must ensure 
+that the package `lsof` is installed.
