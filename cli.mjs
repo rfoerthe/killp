@@ -13,14 +13,15 @@ const argv = yargs(hideBin(process.argv))
 	.example('$0 -p 8080 --parent-name=zsh', 'Terminates the parent process of a process that is listening on port 8080')
 	.option('p', {alias: 'port', description: 'Port of process to terminate', demandOption: true, type: 'number'})
 	.option('parent-name',  {description: 'Name of the parent process that is to be terminated instead', type: 'string'})
+	.option('f', {alias: 'force', description: 'Force terminating process', type: 'boolean'})
 	.option('v', {alias: 'verbose', description: 'Verbose output', type: 'boolean'})
 	.version()
     .argv
 
-const {port, parentName, verbose} = argv
+const {port, parentName, verbose, force} = argv
 
 try {
-	await killp(port, parentName, verbose)
+	await killp(port, parentName, verbose, force)
 } catch (error) {
 	console.error(error.message)
 }

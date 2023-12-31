@@ -8,6 +8,7 @@ Options:
       --help         Show help
   -p, --port         Port of process to terminate
       --parent-name  Name of the parent process that is to be terminated instead
+  -f  --force        Force terminating process      
   -v, --verbose      Verbose output
       --version      Show version number
 ```
@@ -20,6 +21,9 @@ In general, it is not safe to terminate a parent process based only on informati
 The `parent-name` option protects you from making errors. If the name of the parent process and the passed name do not match, 
 `killp` refuses to end the parent process. In this case, `killp` displays an error message containing 
 the expected name of the parent process.
+
+The option `force` has only effect when not terminating a parent process. Because if a parent is force killed, 
+their children remain alive.
 
 The command is working on Windows 10+, macOS 13+, FreeBSD 14+ and Linux systems. Under Linux and FreeBSD you must ensure 
 that the package `lsof` is installed.
