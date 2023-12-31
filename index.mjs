@@ -6,7 +6,7 @@ import shellExec from 'shell-exec';
 import psList from 'ps-list';
 import os from 'os';
 
-export default async function (port, parentName, verbose) {
+export default async function (port, parentName, verbose, forceKill) {
     if (!port || isNaN(Number(port))) throw new Error('Port is not a number')
     port = Number(port)
 
@@ -15,12 +15,12 @@ export default async function (port, parentName, verbose) {
     if (typeof parentName === 'string' && parentName.length > 0) {
         const {parentProcessId, name} = await getParentProcess(parseInt(processId), parentName)  // Use new function
         if (parentProcessId) {
-            await killProcess(parentProcessId, verbose);
+            await killProcess(parentProcessId, verbose, false);
         } else {
             throw new Error(`Refused to terminate parent process. The specified name '${parentName}' does not match the real name '${name}'`)
         }
     } else {
-        await killProcess(processId, verbose);
+        await killProcess(processId, verbose, forceKill);
     }
 
     async function getProcessId() {
@@ -66,15 +66,15 @@ export default async function (port, parentName, verbose) {
         const childProcess = allProcesses.find(proc => proc.pid === childPid);
         const ppid = childProcess ? childProcess.ppid : undefined;
         const parentProcess = allProcesses.find(proc => proc.pid === ppid);
-        return { parentProcessId: parentProcess.name === parentCmdName ? ppid : undefined, name: parentProcess.name }
+        return {parentProcessId: parentProcess.name === parentCmdName ? ppid : undefined, name: parentProcess.name}
     }
 
-    async function killProcess(pid, verbose) {
+    async function killProcess(pid, verbose, force) {
         const res = os.platform() === 'win32' ?
-            await shellExec(`TaskKill /F /PID ${pid}`) : await shellExec(`kill -9 ${pid}`)
+            await shellExec(`TaskKill ${force ? '/F' : ''} /PID ${pid}`) : await shellExec(`kill ${force ? '-9' : ''} ${pid}`)
         if (res.code !== 0) {
             throw new Error("Kill command failed: " + res.stderr)
         }
-        if (verbose) console.log("Killed process: " + pid)
+        if (verbose) console.log(`${force ? 'Killed' : 'Terminated'} process: ${pid}`)
     }
 }
