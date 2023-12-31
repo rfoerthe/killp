@@ -6,18 +6,18 @@ import shellExec from 'shell-exec';
 import psList from 'ps-list';
 import os from 'os';
 
-export default async function (port, parentName, verbose, forceKill) {
+export default async function (port, allowedParents, verbose, forceKill) {
     if (!port || isNaN(Number(port))) throw new Error('Port is not a number')
     port = Number(port)
 
     const processId = os.platform() === 'win32' ? await getProcessIdWin32() : await getProcessId();
 
-    if (typeof parentName === 'string' && parentName.length > 0) {
-        const {parentProcessId, name} = await getParentProcess(parseInt(processId), parentName)  // Use new function
+    if (allowedParents.length > 0) {
+        const {parentProcessId, name} = await getParentProcess(parseInt(processId), allowedParents)  // Use new function
         if (parentProcessId) {
             await killProcess(parentProcessId, verbose, false);
         } else {
-            throw new Error(`Refused to terminate parent process. The specified name '${parentName}' does not match the real name '${name}'`)
+            throw new Error(`Refused to terminate parent process. None of the specified name(s) '${allowedParents}' corresponds to the real name '${name}'`)
         }
     } else {
         await killProcess(processId, verbose, forceKill);
@@ -61,12 +61,12 @@ export default async function (port, parentName, verbose, forceKill) {
         return pids[0]
     }
 
-    async function getParentProcess(childPid, parentCmdName) {
+    async function getParentProcess(childPid, parentNames) {
         const allProcesses = await psList();
         const childProcess = allProcesses.find(proc => proc.pid === childPid);
         const ppid = childProcess ? childProcess.ppid : undefined;
         const parentProcess = allProcesses.find(proc => proc.pid === ppid);
-        return {parentProcessId: parentProcess.name === parentCmdName ? ppid : undefined, name: parentProcess.name}
+        return {parentProcessId: parentNames.includes(parentProcess.name) ? ppid : undefined, name: parentProcess.name}
     }
 
     async function killProcess(pid, verbose, force) {
