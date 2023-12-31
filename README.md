@@ -22,8 +22,8 @@ The `parent-name` option protects you from making errors. If the name of the par
 `killp` refuses to end the parent process. In this case, `killp` displays an error message containing 
 the expected name of the parent process.
 
-The option `force` has only effect when not terminating a parent process. Because if a parent is force killed, 
-their children remain alive.
+The option `force` has only effect in Unix-like systems when not terminating a parent process. 
+Because if a parent is force killed with SIGKILL (kill -9), their children remain alive.
 
 The command is working on Windows 10+, macOS 13+, FreeBSD 14+ and Linux systems. Under Linux and FreeBSD you must ensure 
 that the package `lsof` is installed.

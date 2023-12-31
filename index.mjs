@@ -71,10 +71,10 @@ export default async function (port, parentName, verbose, forceKill) {
 
     async function killProcess(pid, verbose, force) {
         const res = os.platform() === 'win32' ?
-            await shellExec(`TaskKill ${force ? '/F' : ''} /PID ${pid}`) : await shellExec(`kill ${force ? '-9' : ''} ${pid}`)
+            await shellExec(`TaskKill /F /PID ${pid}`) : await shellExec(`kill ${force ? '-9' : ''} ${pid}`)
         if (res.code !== 0) {
             throw new Error("Kill command failed: " + res.stderr)
         }
-        if (verbose) console.log(`${force ? 'Killed' : 'Terminated'} process: ${pid}`)
+        if (verbose) console.log(`${force || os.platform() === 'win32' ? 'Killed' : 'Terminated'} process: ${pid}`)
     }
 }
