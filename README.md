@@ -7,18 +7,19 @@ Usage: killp [-v] -p num [--parent-name string]
 Options:
       --help         Show help
   -p, --port         Port of process to terminate
-      --parent-name  Name of the parent process that is to be terminated instead
+  -a, --ancestor     Terminate parent process instead. Pass a comma-separated list of allowed parent process names.
   -f  --force        Force terminating process      
   -v, --verbose      Verbose output
       --version      Show version number
 ```
 By default, the listening port of the process you want to terminate is specified.
 If you want to terminate the parent process instead you must additionally pass its 
-name to the `parent-name` option. This name is typically the command,
-that started the process.
+name to the `ancestor` option. This name is typically the command,
+that started the process. `ancestor` can be a single name or a
+comma seperated list of names, where one of the names must match the process name.
 
 In general, it is not safe to terminate a parent process based only on information about the child process (e.g. its listen port or PID).
-The `parent-name` option protects you from making errors. If the name of the parent process and the passed name do not match, 
+The `ancestor` option protects you from making errors. If the name of the parent process and the passed name(s) do not match, 
 `killp` refuses to end the parent process. In this case, `killp` displays an error message containing 
 the expected name of the parent process.
 
