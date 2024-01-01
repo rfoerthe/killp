@@ -7,9 +7,6 @@ import psList from 'ps-list';
 import os from 'os';
 
 export default async function (port, allowedParents, verbose, forceKill) {
-    if (!port || isNaN(Number(port))) throw new Error('Port is not a number')
-    port = Number(port)
-
     const processId = os.platform() === 'win32' ? await getProcessIdWin32() : await getProcessId();
 
     if (allowedParents.length > 0) {
@@ -17,7 +14,8 @@ export default async function (port, allowedParents, verbose, forceKill) {
         if (parentProcessId) {
             await killProcess(parentProcessId, verbose, false);
         } else {
-            throw new Error(`Refused to terminate parent process. None of the specified name(s) '${allowedParents}' corresponds to the real name '${name}'`)
+            throw new Error(`Refused to terminate parent process. None of the specified name(s)` +
+            ` '${allowedParents}' corresponds to the real name '${name}'`)
         }
     } else {
         await killProcess(processId, verbose, forceKill);
@@ -70,8 +68,7 @@ export default async function (port, allowedParents, verbose, forceKill) {
     }
 
     async function killProcess(pid, verbose, force) {
-        const res = os.platform() === 'win32' ?
-            await shellExec(`TaskKill /F /PID ${pid}`) : await shellExec(`kill ${force ? '-9' : ''} ${pid}`)
+        const res = os.platform() === 'win32' ? await shellExec(`TaskKill /F /PID ${pid}`) : await shellExec(`kill ${force ? '-9' : ''} ${pid}`)
         if (res.code !== 0) {
             throw new Error("Kill command failed: " + res.stderr)
         }
