@@ -1,8 +1,25 @@
 # killp
-Terminates a process listening on a specific TCP port or terminates its parent process including children.
+Terminates a process listening on a specific TCP port or terminates its parent process including children.  
 
+`killp` requires Node.JS >= 16.0.0 and npm >= 8.0.0.
+
+## Installation
+Install package globally from GitHub repository (branch master):
 ```zsh
-Usage: killp [-v] -p num [--parent-name string]
+npm install -g rfoerthe/killp
+```
+Install a tagged version:
+```zsh
+npm install -g rfoerthe/killp#v1.0.6
+```
+Run directly from remote npm package:
+```zsh
+npx rfoerthe/killp -p 8080
+```
+
+## Usage
+```
+killp [-v] -p number [-a string[,string...]]
 
 Options:
       --help         Show help
@@ -20,23 +37,24 @@ comma seperated list of names, where one of the names must match the process nam
 
 In general, it is not safe to terminate a parent process based only on information about the child process (e.g. its listen port or PID).
 The `ancestor` option protects you from making errors. If the name of the parent process and the passed name(s) do not match, 
-`killp` refuses to end the parent process. In this case, `killp` displays an error message containing 
+`killp` refuses to end the parent process. In this case, the command displays an error message containing 
 the expected name of the parent process.
 
 The option `force` has only effect in Unix-like systems when not terminating a parent process. 
 Because if a parent is force killed with SIGKILL (kill -9), their children remain alive.
+So in this case SIGTERM (kill -15) is used.
 
-The command is working on Windows 10+, macOS 13+, FreeBSD 14+ and Linux systems. Under Linux and FreeBSD you must ensure 
+The command is working on Windows 10+, macOS 13+, FreeBSD 13+ and Linux systems. Under Linux and FreeBSD you must ensure 
 that the package `lsof` is installed.
 
-### Examples
-Terminates a process that is listening on port 9000 and show verbose output:
+## Examples
+Terminate a process that is listening on port 9000 and show verbose output:
 ```zsh
-cli.mjs -v -p 9000      
+killp -v -p 9000      
 ```
-Terminates the parent process of a process that is listening on port 8080. It is expected that the
-parent process has been started via `zsh`.
+Terminate the parent process of a process that is listening on port 8080. It is expected that the
+parent process has been started via `node` or `node.exe`, otherwise the command will fail. 
 ```zsh
-cli.mjs -p 8080 --parent-name=zsh  
+killp -p 8080 --ancestor=node,node.exe  
 ```
-
+This allows you to support Windows and non-Windows systems at the same time.
