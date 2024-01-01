@@ -1,7 +1,11 @@
 # killp
 Terminates a process listening on a specific TCP port or terminates its parent process including children.  
 
+## Compatibility
 `killp` requires Node.JS >= 16.0.0 and npm >= 8.0.0.
+
+The provided command uses os specific external tools and is working on Windows 10+, macOS 13+, FreeBSD 13+ and Linux systems. Under Linux and FreeBSD you must ensure
+that the package `lsof` is installed.
 
 ## Installation
 Install package globally from GitHub repository (branch master):
@@ -43,9 +47,6 @@ the expected name of the parent process.
 The option `force` has only effect in Unix-like systems when not terminating a parent process. 
 Because if a parent is force killed with SIGKILL (kill -9), their children remain alive.
 So in this case SIGTERM (kill -15) is used.
-
-The command is working on Windows 10+, macOS 13+, FreeBSD 13+ and Linux systems. Under Linux and FreeBSD you must ensure 
-that the package `lsof` is installed.
 
 ## Examples
 Terminate a process that is listening on port 9000 and show verbose output:
