@@ -11,7 +11,8 @@ const argv = yargs(hideBin(process.argv))
     .usage('Usage: $0 [-v] -p number [-a string[,string...]]')
     .wrap(140)
     .example('$0 -v -p 9000', 'Terminates a process that is listening on port 9000 and show verbose output')
-    .example('$0 -p 8080 -a "node,node.exe"', 'Terminates the parent process of a process that is listening on port 8080')
+    .example('$0 -p 8080 -a zsh', 'Terminates the parent process (zsh) of a process that is listening on port 8080')
+    .example('$0 -p 8080 -a node,node.exe', 'Terminates the parent process (node or node.exe) of a process that is listening on port 8080')
     .option('p', {alias: 'port', description: 'Port of process to terminate', demandOption: true, type: 'number'})
     .option('a', {
         alias: "ancestor",
@@ -25,7 +26,10 @@ const argv = yargs(hideBin(process.argv))
     .strict()
     .check(argv => {
         if (isNaN(argv.port)) {
-            throw new Error('Port is not a number')
+            throw new Error('Error: port is not a number')
+        }
+        if (argv.ancestor !== undefined && argv.ancestor.trim().length === 0) {
+            throw new Error('Error: ancestor value must be a non-empty string')
         }
         return true
     })
