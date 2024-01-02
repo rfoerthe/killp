@@ -29,7 +29,7 @@ export default async function (port, allowedParents, verbose, forceKill) {
 
         const lines = stdout.split('\n')
 
-        const foundProcess = lines.filter((line) => line.match(new RegExp(`TCP.*:*${port}`)))
+        const foundProcess = lines.filter((line) => line.match(new RegExp(`TCP.*:.*${port}.*(LISTEN)`)))
         if (foundProcess.length === 0) throw new Error(`No process running on port ${port}`)
         if (foundProcess.length > 1) throw new Error('More than one process found')
 
