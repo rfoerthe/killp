@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict'
 
-import killp from "./index.mjs";
-import yargs from "yargs";
-import {hideBin} from "yargs/helpers";
+import killp from './index.mjs';
+import yargs from 'yargs';
+import {hideBin} from 'yargs/helpers';
 
 process.argv[0] = 'killp'
 const argv = yargs(hideBin(process.argv))
