@@ -10,11 +10,11 @@ import os from 'os'
 describe('Test index.mjs default function', () => {
   let consoleStub
 
-  beforeEach(function() {
+  beforeEach(() => {
     consoleStub = sinon.stub(console, 'log')
   })
 
-  afterEach(function () {
+  afterEach(() => {
     consoleStub.restore()
   })
 
@@ -23,7 +23,7 @@ describe('Test index.mjs default function', () => {
   })
 
   it('should trigger an error if the port parameter is missing', async () => {
-      await defaultFunction().catch(function(err) {
+      await defaultFunction().catch(err => {
         expect(err.message).to.equal('No process running on port undefined')
       })
   })
