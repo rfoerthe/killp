@@ -17,5 +17,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm test
-      - run: npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_NODEJS }}"      
+      - run: npm config set '@rfoerthe:registry' "https://registry.npmjs.org/"
+      - run: npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_NODEJS }}"
       - run: npm publish --access public
