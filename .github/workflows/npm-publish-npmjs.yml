@@ -10,13 +10,12 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
-      - run: npm test
-      - run: npm config set '@rfoerthe:registry' "https://registry.npmjs.org/"
-      - run: npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_NODEJS }}"
       - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_NODEJS }}

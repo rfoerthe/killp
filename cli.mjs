@@ -4,6 +4,7 @@
 import killp from './index.mjs';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
+import process from 'node:process';
 
 process.argv[0] = 'killp'
 const argv = yargs(hideBin(process.argv))
