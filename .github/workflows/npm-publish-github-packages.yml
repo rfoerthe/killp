@@ -7,9 +7,6 @@ on:
   workflow_dispatch:
   release:
     types: [ published ]
-  push:
-    branches:
-      - "master"
 
 jobs:
   build:
