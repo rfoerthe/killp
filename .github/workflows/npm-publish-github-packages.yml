@@ -33,6 +33,5 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - run: npm ci
       - run: npm config set '@rfoerthe:registry' "https://npm.pkg.github.com/"
+      - run: npm config set '//npm.pkg.github.com/:_authToken' "${{ secrets.NPM_GITHUB_PACKAGES }}"
       - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_GITHUB_PACKAGES}}
