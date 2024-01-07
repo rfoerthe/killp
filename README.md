@@ -10,15 +10,15 @@ that the package `lsof` is installed.
 ## Installation
 Install package globally from GitHub repository (branch master):
 ```zsh
-npm install -g rfoerthe/killp
+npm install -g @rfoerthe/killp
 ```
-Install a tagged version:
+Install a specific version:
 ```zsh
-npm install -g rfoerthe/killp#v1.0.6
+npm install -g @rfoerthe/killp@1.0.10
 ```
 Run directly from remote npm package:
 ```zsh
-npx rfoerthe/killp -p 8080
+npx @rfoerthe/killp -p 8080
 ```
 
 ## Usage
