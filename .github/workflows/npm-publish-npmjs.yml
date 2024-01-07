@@ -19,4 +19,5 @@ jobs:
       - run: npm test
       - run:
           npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_NODEJS }}"
+          npm config set '@rfoerthe:registry' "https://registry.npmjs.org/"
           npm publish --access public
