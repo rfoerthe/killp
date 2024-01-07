@@ -8,13 +8,17 @@ The provided command uses os specific external tools and is working on Windows 1
 that the package `lsof` is installed.
 
 ## Installation
-Install package globally from GitHub repository (branch master):
+Install package in project:
 ```zsh
-npm install -g @rfoerthe/killp
+npm i @rfoerthe/killp
+```
+Install package globally:
+```zsh
+npm i -g @rfoerthe/killp
 ```
 Install a specific version:
 ```zsh
-npm install -g @rfoerthe/killp@1.0.10
+npm i -g @rfoerthe/killp@1.0.13
 ```
 Run directly from remote npm package:
 ```zsh
