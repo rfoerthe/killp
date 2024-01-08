@@ -6,6 +6,8 @@ import shellExec from 'shell-exec';
 import psList from 'ps-list';
 import os from 'os';
 
+const isWindows = os.platform() === 'win32'
+
 export default async function (port, allowedParents, verbose, forceKill) {
     const utils = new Utils()
     const processId = os.platform() === 'win32' ? await utils.getProcessIdWin32(port) : await utils.getProcessId(port);
@@ -14,16 +16,15 @@ export default async function (port, allowedParents, verbose, forceKill) {
         const {parentProcessId, name} = await utils.getParentProcess(parseInt(processId), allowedParents)  // Use new function
         if (parentProcessId) {
             await utils.killProcess(parentProcessId, verbose, false);
-            if (verbose) console.log(`${os.platform() === 'win32' ? 'Killed' : 'Terminated'} parent process '${name}': ${parentProcessId}`)
+            if (verbose) console.log(`${ isWindows ? 'Killed' : 'Terminated'} parent process '${name}': ${parentProcessId}`)
         } else {
             throw new Error(`Refused to terminate parent process. None of the specified name(s)` +
             ` '${allowedParents}' corresponds to the real name '${name}'`)
         }
     } else {
         await utils.killProcess(processId, verbose, forceKill);
-        if (verbose) console.log(`${forceKill || os.platform() === 'win32' ? 'Killed' : 'Terminated'} process: ${processId}`)
+        if (verbose) console.log(`${forceKill || isWindows ? 'Killed' : 'Terminated'} process: ${processId}`)
     }
-
 }
 
 export class Utils {
@@ -74,7 +75,7 @@ export class Utils {
     }
 
     async killProcess(pid, verbose, force) {
-        const res = os.platform() === 'win32' ? await shellExec(`TaskKill /F /PID ${pid}`) : await shellExec(`kill ${force ? '-9' : ''} ${pid}`)
+        const res = isWindows ? await shellExec(`TaskKill /F /PID ${pid}`) : await shellExec(`kill ${force ? '-9' : ''} ${pid}`)
         if (res.code !== 0) {
             throw new Error("Kill command failed: " + res.stderr)
         }
