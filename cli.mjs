@@ -29,6 +29,9 @@ const argv = yargs(hideBin(process.argv))
         if (isNaN(argv.port)) {
             throw new Error('Error: port is not a number')
         }
+        if (argv.port < 0 || argv.port > 65535) {
+          throw new Error('Error: port is not within the permissible range 0...65535')
+        }
         if (argv.ancestor !== undefined && argv.ancestor.trim().length === 0) {
             throw new Error('Error: ancestor value must be a non-empty string')
         }
