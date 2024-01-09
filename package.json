@@ -35,7 +35,6 @@
   "homepage": "https://github.com/rfoerthe/killp#readme",
   "dependencies": {
     "ps-list": "^8.1.1",
-    "shell-exec": "1.0.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
