@@ -2,9 +2,9 @@
 'use strict'
 
 import psList from 'ps-list'
-import os from 'os'
-import util from 'util'
-import childProcess from 'child_process'
+import os from 'node:os'
+import util from 'node:util'
+import childProcess from 'node:child_process'
 
 const execAsync = util.promisify(childProcess.exec)
 
