@@ -1,41 +1,40 @@
 #!/usr/bin/env node
 'use strict'
 
-import shellExec from 'shell-exec';
+import psList from 'ps-list'
+import os from 'os'
+import util from 'util'
+import childProcess from 'child_process'
 
-import psList from 'ps-list';
-import os from 'os';
+const execAsync = util.promisify(childProcess.exec)
 
 const isWindows = os.platform() === 'win32'
 
 export default async function (port, allowedParents, verbose, forceKill) {
-    const utils = new Utils()
-    const processId = os.platform() === 'win32' ? await utils.getProcessIdWin32(port) : await utils.getProcessId(port);
+    const support = new Support()
+    const processId = isWindows ? await support.getProcessIdWin32(port) : await support.getProcessId(port);
 
     if (allowedParents.length > 0) {
-        const {parentProcessId, name} = await utils.getParentProcess(parseInt(processId), allowedParents)  // Use new function
+        const {parentProcessId, name} = await support.getParentProcess(parseInt(processId), allowedParents)  // Use new function
         if (parentProcessId) {
-            await utils.killProcess(parentProcessId, verbose, false);
+            await support.killProcess(parentProcessId, verbose, false);
             if (verbose) console.log(`${ isWindows ? 'Killed' : 'Terminated'} parent process '${name}': ${parentProcessId}`)
         } else {
             throw new Error(`Refused to terminate parent process. None of the specified name(s)` +
             ` '${allowedParents}' corresponds to the real name '${name}'`)
         }
     } else {
-        await utils.killProcess(processId, verbose, forceKill);
+        await support.killProcess(processId, verbose, forceKill);
         if (verbose) console.log(`${forceKill || isWindows ? 'Killed' : 'Terminated'} process: ${processId}`)
     }
 }
 
-export class Utils {
+export class Support {
     async getProcessId(port) {
-        const res = await shellExec('lsof -i -P -n')
-        if (res.code !== 0 && res.stderr) throw new Error("command 'lsof' failed: " + res.stderr)
-        const {stdout} = res
+        const {stdout} = await execAsync('lsof -i -P -n')
         if (!stdout) throw new Error(`No process running on port ${port}`)
 
         const lines = stdout.split('\n')
-
         const foundProcess = lines.filter((line) => line.match(new RegExp(`TCP.*:.*${port}.*(LISTEN)`)))
         if (foundProcess.length === 0) throw new Error(`No process running on port ${port}`)
         if (foundProcess.length > 1) throw new Error('More than one process found')
@@ -45,13 +44,10 @@ export class Utils {
     }
 
     async getProcessIdWin32(port) {
-        const res = await shellExec('netstat -nao')
-        if (res.code !== 0 && res.stderr) throw new Error("command 'netstat' failed: " + res.stderr)
-        const {stdout} = res
+        const {stdout} = await execAsync('netstat -nao')
         if (!stdout) throw new Error(`No process running on port ${port}`)
 
         const lines = stdout.split('\n')
-
         // The second white-space delimited column of netstat output is the local port,
         const lineWithLocalPortRegEx = new RegExp(`^ *TCP *[^ ]*:${port}`, 'gm')
         const linesWithLocalPort = lines.filter(line => line.match(lineWithLocalPortRegEx))
@@ -63,6 +59,7 @@ export class Utils {
         }, [])
         if (pids.length === 0) throw new Error(`No process running on port ${port}`)
         if (pids.length > 1) throw new Error('More than one process found')
+
         return pids[0]
     }
 
@@ -75,11 +72,12 @@ export class Utils {
     }
 
     async killProcess(pid, verbose, force) {
-        const res = isWindows ? await shellExec(`TaskKill /F /PID ${pid}`) : await shellExec(`kill ${force ? '-9' : ''} ${pid}`)
-        if (res.code !== 0) {
-            throw new Error("Kill command failed: " + res.stderr)
+        try {
+            isWindows ? await execAsync(`TaskKill /F /PID ${pid}`) : await execAsync(`kill ${force ? '-9' : ''} ${pid}`)
+            return true;
+        } catch (e) {
+            throw new Error("Kill command failed: " + e.stderr)
         }
-        return true;
     }
 }
 

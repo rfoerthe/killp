@@ -1,7 +1,7 @@
 // import required modules and functions
 import { describe, it } from 'mocha'
 import defaultFunction from './index.mjs'
-import { Utils } from './index.mjs'
+import { Support } from './index.mjs'
 
 import {expect} from 'chai'
 import sinon from 'sinon'
@@ -29,9 +29,9 @@ describe('Test index.mjs default function', () => {
   })
 
   it('should terminate process on port 9000', async () => {
-    let getProcessId = sinon.stub(Utils.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
+    let getProcessId = sinon.stub(Support.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
     getProcessId.withArgs(9000).returns(12345)
-    const killProcess = sinon.stub(Utils.prototype, "killProcess").returns(true)
+    const killProcess = sinon.stub(Support.prototype, "killProcess").returns(true)
 
     await defaultFunction(9000, [], true, false)
     expect( console.log.calledWith('Terminated process: 12345') ).to.be.true
@@ -43,9 +43,9 @@ describe('Test index.mjs default function', () => {
   })
 
   it('should kill process on port 9000', async () => {
-    let getProcessId = sinon.stub(Utils.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
+    let getProcessId = sinon.stub(Support.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
     getProcessId.withArgs(9000).returns(12345)
-    const killProcess = sinon.stub(Utils.prototype, "killProcess").returns(true)
+    const killProcess = sinon.stub(Support.prototype, "killProcess").returns(true)
 
     await defaultFunction(9000, [], true, true)
     expect( console.log.calledWith('Killed process: 12345') ).to.be.true
@@ -57,10 +57,10 @@ describe('Test index.mjs default function', () => {
   })
 
   it('should terminate parent process of process on port 9010', async () => {
-    let getProcessId = sinon.stub(Utils.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
+    let getProcessId = sinon.stub(Support.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
     getProcessId.withArgs(9010).returns(12345)
-    const killProcess = sinon.stub(Utils.prototype, "killProcess").returns(true)
-    const getParentProcess = sinon.stub(Utils.prototype, "getParentProcess")
+    const killProcess = sinon.stub(Support.prototype, "killProcess").returns(true)
+    const getParentProcess = sinon.stub(Support.prototype, "getParentProcess")
     getParentProcess.withArgs(12345, ['node','node.exe']).returns({name: 'node', parentProcessId: 707111})
 
     await defaultFunction(9010, ['node','node.exe'], true, false)
