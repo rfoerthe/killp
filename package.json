@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Terminate a process listening on a specific TCP port or terminate its parent process including children.",
   "main": "index.mjs",
+  "types": "index.d.ts",
   "bin": {
     "killp": "cli.mjs"
   },
