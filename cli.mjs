@@ -45,4 +45,5 @@ try {
     await killp(port, allowedParents, verbose, force)
 } catch (error) {
     console.error(error.message)
+    process.exit(1)
 }
