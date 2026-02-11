@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Terminate a process listening on a specific TCP port or terminate its parent process including children.",
   "main": "index.mjs",
+  "types": "index.d.ts",
   "bin": {
     "killp": "cli.mjs"
   },
@@ -34,8 +35,8 @@
   },
   "homepage": "https://github.com/rfoerthe/killp#readme",
   "dependencies": {
-    "ps-list": "^8.1.1",
-    "yargs": "^17.7.2"
+    "ps-list": "^9.0.0",
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "chai": "^5.0.0",
