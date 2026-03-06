@@ -2,7 +2,7 @@
 Terminates a process listening on a specific TCP port or terminates its parent process including children.  
 
 ## Compatibility
-`killp` requires Node.JS >= 16.0.0 and npm >= 8.0.0.
+`killp` requires Node.js >= 22.0.0 and npm >= 10.0.0.
 
 The provided command uses os specific external tools and is working on Windows 10+, macOS 13+, FreeBSD 13+ and Linux systems. Under Linux and FreeBSD you must ensure
 that the package `lsof` is installed.
@@ -12,18 +12,28 @@ Install package in project:
 ```zsh
 npm i @rfoerthe/killp
 ```
+
 Install package globally:
 ```zsh
 npm i -g @rfoerthe/killp
 ```
+
 Install a specific version:
 ```zsh
-npm i -g @rfoerthe/killp@1.0.13
+npm i -g @rfoerthe/killp@1.0.17
 ```
+
 Run directly from remote npm package:
 ```zsh
 npx @rfoerthe/killp -p 8080
 ```
+
+Local development in this repository:
+```zsh
+npm install
+./node_modules/.bin/killp -p 8080
+```
+The local `npm install` runs a `postinstall` script that creates `node_modules/.bin/killp` for development in this repository.
 
 ## Usage
 ```
@@ -41,16 +51,16 @@ By default, the listening port of the process you want to terminate is specified
 If you want to terminate the parent process instead you must additionally pass its 
 name to the `ancestor` option. This name is typically the command,
 that started the process. `ancestor` can be a single name or a
-comma seperated list of names, where one of the names must match the process name.
+comma-separated list of names, where one of the names must match the process name.
 
 In general, it is not safe to terminate a parent process based only on information about the child process (e.g. its listen port or PID).
 The `ancestor` option protects you from making errors. If the name of the parent process and the passed name(s) do not match, 
 `killp` refuses to end the parent process. In this case, the command displays an error message containing 
 the expected name of the parent process.
 
-The option `force` has only effect in Unix-like systems when not terminating a parent process. 
-Because if a parent is force killed with SIGKILL (kill -9), their children remain alive.
-So in this case SIGTERM (kill -15) is used.
+The option `force` only has an effect on Unix-like systems when not terminating a parent process.
+If a parent process is force killed with SIGKILL (`kill -9`), its children remain alive.
+So when terminating a parent process, `killp` uses SIGTERM (`kill -15`) instead.
 
 ## Examples
 Terminate a process that is listening on port 9000 and show verbose output:
