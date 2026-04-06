@@ -75,15 +75,16 @@ export class Support {
         const {stdout} = await execAsync('netstat -nao')
         if (!stdout) throw new Error(`No process running on port ${port}`)
 
-        const lines = stdout.split('\n')
-        // The second white-space delimited column of netstat output is the local port,
-        const lineWithLocalPortRegEx = new RegExp(`^ *TCP *[^ ]*:${port}`, 'gm')
-        const linesWithLocalPort = lines.filter(line => line.match(lineWithLocalPortRegEx))
-
+        // Use /\r?\n/ to handle Windows CRLF and Unix LF line endings
+        const lines = stdout.split(/\r?\n/)
+        // Match port exactly using \s after port number to avoid partial matches (e.g. port 80 matching 8080)
+        const lineWithLocalPortRegEx = new RegExp(`^ *TCP\\s+[^ ]*:${port}\\s`, 'i')
+        const linesWithLocalPort = lines.filter(line => lineWithLocalPortRegEx.test(line))
 
         const pids = linesWithLocalPort.reduce((acc, line) => {
-            const match = line.match(/(\d*)\w*(\n|$)/gm)
-            return match && match[0] && !acc.includes(match[0]) ? acc.concat(match[0]) : acc
+            // PID is the last whitespace-delimited column; trim() removes any trailing \r
+            const pid = line.trim().split(/\s+/).pop()
+            return pid && /^\d+$/.test(pid) && !acc.includes(pid) ? acc.concat(pid) : acc
         }, [])
         if (pids.length === 0) throw new Error(`No process running on port ${port}`)
         if (pids.length > 1) throw new Error('More than one process found')
