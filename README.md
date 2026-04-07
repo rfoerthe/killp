@@ -20,7 +20,7 @@ npm i -g @rfoerthe/killp
 
 Install a specific version:
 ```zsh
-npm i -g @rfoerthe/killp@1.0.17
+npm i -g @rfoerthe/killp@1.0.18
 ```
 
 Run directly from remote npm package:

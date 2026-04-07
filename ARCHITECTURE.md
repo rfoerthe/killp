@@ -519,7 +519,7 @@ Error: More than one process found
 
 ## Version Info
 
-- **Current Version**: 1.0.17
+- **Current Version**: 1.0.18
 - **Engine Requirements**: Node.js >= 22.0.0, npm >= 10.0.0
 - **License**: Apache-2.0
 - **Author**: Roland Förther
