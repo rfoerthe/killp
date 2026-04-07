@@ -1,5 +1,5 @@
 // import required modules and functions
-import { describe, it } from 'mocha'
+import { describe, it, beforeEach, afterEach } from 'mocha'
 import defaultFunction from './index.mjs'
 import { Support } from './index.mjs'
 
@@ -7,15 +7,19 @@ import {expect} from 'chai'
 import sinon from 'sinon'
 import os from 'os'
 
+const isWindows = os.platform() === 'win32'
+const getProcessIdMethod = isWindows ? 'getProcessIdWin32' : 'getProcessId'
+
 describe('Test index.mjs default function', () => {
-  let consoleStub
+  let sandbox
 
   beforeEach(() => {
-    consoleStub = sinon.stub(console, 'log')
+    sandbox = sinon.createSandbox()
+    sandbox.stub(console, 'log')
   })
 
   afterEach(() => {
-    consoleStub.restore()
+    sandbox.restore()
   })
 
   it('should be an async function', () => {
@@ -29,48 +33,45 @@ describe('Test index.mjs default function', () => {
   })
 
   it('should terminate process on port 9000', async () => {
-    let getProcessId = sinon.stub(Support.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
+    const getProcessId = sandbox.stub(Support.prototype, getProcessIdMethod)
     getProcessId.withArgs(9000).returns(12345)
-    const killProcess = sinon.stub(Support.prototype, "killProcess").returns(true)
+    const killProcess = sandbox.stub(Support.prototype, "killProcess").returns(true)
 
     await defaultFunction(9000, [], true, false)
-    expect( console.log.calledWith('Terminated process: 12345') ).to.be.true
+
+    const expectedMsg = isWindows ? 'Killed process: 12345' : 'Terminated process: 12345'
+    expect( console.log.calledWith(expectedMsg) ).to.be.true
 
     sinon.assert.calledWith(getProcessId, 9000)
     sinon.assert.calledWith(killProcess, 12345, true, false)
-    getProcessId.restore()
-    killProcess.restore()
   })
 
   it('should kill process on port 9000', async () => {
-    let getProcessId = sinon.stub(Support.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
+    const getProcessId = sandbox.stub(Support.prototype, getProcessIdMethod)
     getProcessId.withArgs(9000).returns(12345)
-    const killProcess = sinon.stub(Support.prototype, "killProcess").returns(true)
+    const killProcess = sandbox.stub(Support.prototype, "killProcess").returns(true)
 
     await defaultFunction(9000, [], true, true)
     expect( console.log.calledWith('Killed process: 12345') ).to.be.true
 
     sinon.assert.calledWith(getProcessId, 9000)
     sinon.assert.calledWith(killProcess, 12345, true, true)
-    getProcessId.restore()
-    killProcess.restore()
   })
 
   it('should terminate parent process of process on port 9010', async () => {
-    let getProcessId = sinon.stub(Support.prototype, os.platform() === 'win32' ? 'getProcessIdWin32': 'getProcessId')
+    const getProcessId = sandbox.stub(Support.prototype, getProcessIdMethod)
     getProcessId.withArgs(9010).returns(12345)
-    const killProcess = sinon.stub(Support.prototype, "killProcess").returns(true)
-    const getParentProcess = sinon.stub(Support.prototype, "getParentProcess")
+    const killProcess = sandbox.stub(Support.prototype, "killProcess").returns(true)
+    const getParentProcess = sandbox.stub(Support.prototype, "getParentProcess")
     getParentProcess.withArgs(12345, ['node','node.exe']).returns({name: 'node', parentProcessId: 707111})
 
     await defaultFunction(9010, ['node','node.exe'], true, false)
-    expect( console.log.calledWith('Terminated parent process \'node\': 707111') ).to.be.true
+
+    const expectedMsg = isWindows ? 'Killed parent process \'node\': 707111' : 'Terminated parent process \'node\': 707111'
+    expect( console.log.calledWith(expectedMsg) ).to.be.true
 
     sinon.assert.calledWith(getProcessId, 9010)
     sinon.assert.calledWith(getParentProcess, 12345, ['node','node.exe'])
     sinon.assert.calledWith(killProcess, 707111, true, false)
-    getProcessId.restore()
-    getParentProcess.restore()
-    killProcess.restore()
   })
 })

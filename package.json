@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Terminate a process listening on a specific TCP port or terminate its parent process including children.",
   "main": "index.mjs",
+  "types": "index.d.ts",
   "bin": {
     "killp": "cli.mjs"
   },
@@ -48,6 +49,6 @@
   "overrides": {
     "diff": "^8.0.3",
     "glob": "^13.0.6",
-    "serialize-javascript": "^7.0.4"
+    "serialize-javascript": "^7.0.5"
   }
 }
