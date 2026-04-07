@@ -1,6 +1,6 @@
 {
   "name": "@rfoerthe/killp",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "type": "module",
   "description": "Terminate a process listening on a specific TCP port or terminate its parent process including children.",
   "main": "index.mjs",
@@ -43,7 +43,7 @@
     "mocha": "^11.7.5",
     "mocha-sinon": "^2.1.2",
     "nodemon": "^3.1.14",
-    "sinon": "^21.0.2"
+    "sinon": "^21.0.3"
   },
   "overrides": {
     "diff": "^8.0.3",
