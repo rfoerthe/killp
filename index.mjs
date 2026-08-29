@@ -7,11 +7,23 @@ import util from 'node:util'
 import childProcess from 'node:child_process'
 
 const execAsync = util.promisify(childProcess.exec)
+const execFileAsync = util.promisify(childProcess.execFile)
 
 const isWindows = os.platform() === 'win32'
 
 // Cached regular expressions for performance
 const WHITESPACE_REGEX = /\s+/
+const REGEXP_METACHARACTERS = /[.*+?^${}()|[\]\\]/g
+
+/**
+ * Escapes regular expression metacharacters so that a value can be embedded
+ * safely into a dynamically built regular expression.
+ * @param {*} value - The value to escape
+ * @returns {string} The value as a string with all metacharacters escaped
+ */
+function escapeRegExp(value) {
+    return String(value).replace(REGEXP_METACHARACTERS, '\\$&')
+}
 
 /**
  * Terminates a process listening on a specific TCP port or its parent process including children.
@@ -56,7 +68,7 @@ export class Support {
         if (!stdout) throw new Error(`No process running on port ${port}`)
 
         const lines = stdout.split('\n')
-        const portRegex = new RegExp(`TCP.*:.*${port}.*(LISTEN)`)
+        const portRegex = new RegExp(`TCP.*:.*${escapeRegExp(port)}.*(LISTEN)`)
         const foundProcess = lines.filter((line) => line.match(portRegex))
         if (foundProcess.length === 0) throw new Error(`No process running on port ${port}`)
         if (foundProcess.length > 1) throw new Error('More than one process found')
@@ -78,7 +90,7 @@ export class Support {
         // Use /\r?\n/ to handle Windows CRLF and Unix LF line endings
         const lines = stdout.split(/\r?\n/)
         // Match port exactly using \s after port number to avoid partial matches (e.g. port 80 matching 8080)
-        const lineWithLocalPortRegEx = new RegExp(`^ *TCP\\s+[^ ]*:${port}\\s`, 'i')
+        const lineWithLocalPortRegEx = new RegExp(`^ *TCP\\s+[^ ]*:${escapeRegExp(port)}\\s`, 'i')
         const linesWithLocalPort = lines.filter(line => lineWithLocalPortRegEx.test(line))
 
         const pids = linesWithLocalPort.reduce((acc, line) => {
@@ -113,11 +125,19 @@ export class Support {
      * @param {boolean} verbose - Enable verbose output (not used internally)
      * @param {boolean} force - Force kill using SIGKILL on Unix (kill -9), always forced on Windows
      * @returns {Promise<boolean>} True if successful
-     * @throws {Error} When the kill command fails
+     * @throws {Error} When the process ID is not a positive integer or the kill command fails
      */
     async killProcess(pid, verbose, force) {
+        // Reject anything that is not a plain positive integer. Besides guarding against
+        // injection, this stops targets like -1, which would signal every process of the user.
+        const processId = Number(pid)
+        if (!Number.isInteger(processId) || processId <= 0) throw new Error(`Invalid process id: ${pid}`)
+
         try {
-            isWindows ? await execAsync(`TaskKill /F /PID ${pid}`) : await execAsync(`kill${force ? ' -9' : ''} ${pid}`)
+            // Arguments are passed as an array so that no shell interprets them
+            isWindows
+                ? await execFileAsync('TaskKill', ['/F', '/PID', String(processId)])
+                : await execFileAsync('kill', force ? ['-9', String(processId)] : [String(processId)])
             return true;
         } catch (e) {
             throw new Error("Kill command failed: " + e.stderr)

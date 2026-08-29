@@ -20,11 +20,11 @@ await chmod(path.join(binDir, 'killp'), 0o755)
 
 if (process.platform === 'win32') {
   const cmdScript = `@ECHO off
-node "%~dp0\\${cliRelativePath.replace(/\\/g, '\\\\')}" %*
+node "%~dp0\\${cliRelativePath}" %*
 `
   const ps1Script = `#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
-node "$basedir\\${cliRelativePath.replace(/\\/g, '\\')}" $args
+node "$basedir\\${cliRelativePath}" $args
 `
 
   await writeFile(path.join(binDir, 'killp.cmd'), cmdScript)
