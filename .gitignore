@@ -51,6 +51,9 @@ web_modules/
 # Optional npm cache directory
 .npm
 
+# npm auth config (may contain registry tokens)
+.npmrc
+
 # Optional eslint cache
 .eslintcache
 
